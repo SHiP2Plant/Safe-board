@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>车间安全看板</title>
+    <style>
+        /* 清除默认边距，设置背景色 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        /* 核心画板：固定 16:9 比例，自动适配各种电视屏幕且不变形 */
+        .board {
+            position: relative;
+            background-image: url('image_ac6121.jpg');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100vw;
+            height: 56.25vw; /* 保持16:9比例 */
+        }
+
+        /* 当屏幕较宽时（如超宽屏），以高度为基准限制宽度 */
+        @media (min-aspect-ratio: 16/9) {
+            .board {
+                width: 177.78vh;
+                height: 100vh;
+            }
+        }
+
+        /* 遮罩层：覆盖原图的“4011天”，同时作为新数据的容器 */
+        .cover-patch {
+            position: absolute;
+            top: 35%;     /* 垂直位置：精确对应原图数字所在高度 */
+            left: 10%;    /* 留出左右边距 */
+            width: 80%;   /* 足够宽以覆盖原有文字 */
+            height: 20%;  /* 高度覆盖数字区域 */
+            background-color: #ffffff; /* 纯白背景与原图融合 */
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+        }
+
+        /* 动态数字样式：精准模拟原图字体 */
+        .dynamic-number {
+            font-size: 8vw; /* 字体大小跟随屏幕宽度自适应 */
+            font-weight: bold;
+            color: #666666; /* 匹配原图的深灰色 */
+            line-height: 1;
+        }
+
+        /* 单位“天”样式 */
+        .dynamic-unit {
+            font-size: 3vw;
+            font-weight: bold;
+            color: #666666;
+            margin-left: 20px;
+        }
+
+        /* 限制超宽屏下的字体上限 */
+        @media (min-aspect-ratio: 16/9) {
+            .dynamic-number { font-size: 14vh; }
+            .dynamic-unit { font-size: 5vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 16:9 容器画板 -->
+    <div class="board">
+        <!-- 覆盖区域与动态数据 -->
+        <div class="cover-patch">
+            <div class="dynamic-number" id="safe-days">计算中...</div>
+            <div class="dynamic-unit">天</div>
+        </div>
+    </div>
+
+    <script>
+        function calculateSafeDays() {
+            // 起始日期：2015年10月30日（JavaScript中月份从0开始，9代表10月）
+            const startDate = new Date(2015, 9, 30);
+            const currentDate = new Date();
+            
+            // 计算时间差并向下取整为天数
+            const timeDiff = currentDate.getTime() - startDate.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            
+            // 将计算结果更新到页面上
+            document.getElementById('safe-days').innerText = daysDiff;
+        }
+
+        // 页面打开时立即执行一次计算
+        calculateSafeDays();
+
+        // 设定每 1 小时自动重新计算一次，确保跨越零点时天数自动增加
+        setInterval(calculateSafeDays, 1000 * 60 * 60);
+    </script>
+</body>
+</html>
