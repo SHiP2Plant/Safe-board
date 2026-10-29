@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>车间安全看板</title>
     <style>
-        /* 清除默认边距，设置背景色 */
+        /* 基础页面设置 */
         body, html {
             margin: 0;
             padding: 0;
@@ -15,21 +15,21 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
         }
 
-        /* 核心画板：固定 16:9 比例，自动适配各种电视屏幕且不变形 */
+        /* 16:9 比例画板，使用您指定的背景图片名称 */
         .board {
             position: relative;
-            background-image: url('image_ac6121.jpg');
+            background-image: url('image_ac6121.jpg'); /* 已经改回原来的名字 */
             background-size: 100% 100%;
             background-repeat: no-repeat;
             background-position: center;
             width: 100vw;
-            height: 56.25vw; /* 保持16:9比例 */
+            height: 56.25vw; 
         }
 
-        /* 当屏幕较宽时（如超宽屏），以高度为基准限制宽度 */
+        /* 超宽屏适配限制 */
         @media (min-aspect-ratio: 16/9) {
             .board {
                 width: 177.78vh;
@@ -37,71 +37,70 @@
             }
         }
 
-        /* 遮罩层：覆盖原图的“4011天”，同时作为新数据的容器 */
-        .cover-patch {
+        /* 数据容器：锁定在顶部文字和底部插图之间的空白区域 */
+        .data-container {
             position: absolute;
-            top: 35%;     /* 垂直位置：精确对应原图数字所在高度 */
-            left: 10%;    /* 留出左右边距 */
-            width: 80%;   /* 足够宽以覆盖原有文字 */
-            height: 20%;  /* 高度覆盖数字区域 */
-            background-color: #ffffff; /* 纯白背景与原图融合 */
+            top: 33%;    /* 起始位置在顶部两行标题下方 */
+            height: 32%; /* 容器高度刚好填满中间空白处，利用 flex 自动垂直居中 */
+            left: 0;
+            width: 100%;
             display: flex;
             justify-content: center;
-            align-items: baseline;
+            align-items: center;
         }
 
-        /* 动态数字样式：精准模拟原图字体 */
+        /* 动态数字：绿色、大字号 */
         .dynamic-number {
-            font-size: 8vw; /* 字体大小跟随屏幕宽度自适应 */
+            font-size: 12vw; 
             font-weight: bold;
-            color: #666666; /* 匹配原图的深灰色 */
+            color: #07c160; /* 绿色 */
             line-height: 1;
         }
 
-        /* 单位“天”样式 */
+        /* 动态单位：包含天字、绿色、双语展示 */
         .dynamic-unit {
-            font-size: 3vw;
+            font-size: 3.5vw;
             font-weight: bold;
-            color: #666666;
-            margin-left: 20px;
+            color: #07c160; /* 绿色 */
+            margin-left: 25px;
+            margin-top: 4vw; /* 微调单位的垂直对齐，使其重心稳定 */
         }
 
-        /* 限制超宽屏下的字体上限 */
+        /* 针对超宽屏的字号上限限制 */
         @media (min-aspect-ratio: 16/9) {
-            .dynamic-number { font-size: 14vh; }
-            .dynamic-unit { font-size: 5vh; }
+            .dynamic-number { font-size: 21.3vh; }
+            .dynamic-unit { font-size: 6.2vh; margin-top: 7vh; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 16:9 容器画板 -->
     <div class="board">
-        <!-- 覆盖区域与动态数据 -->
-        <div class="cover-patch">
+        <!-- 数据展示区，在中间空白处居中 -->
+        <div class="data-container">
             <div class="dynamic-number" id="safe-days">计算中...</div>
-            <div class="dynamic-unit">天</div>
+            <div class="dynamic-unit">天 / Days</div>
         </div>
     </div>
 
     <script>
         function calculateSafeDays() {
-            // 起始日期：2015年10月30日（JavaScript中月份从0开始，9代表10月）
+            // 起始日期：2015年10月30日
             const startDate = new Date(2015, 9, 30);
             const currentDate = new Date();
             
-            // 计算时间差并向下取整为天数
+            // 计算时间差并转换为天数
             const timeDiff = currentDate.getTime() - startDate.getTime();
             const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             
-            // 将计算结果更新到页面上
+            // 更新页面数字
             document.getElementById('safe-days').innerText = daysDiff;
         }
 
-        // 页面打开时立即执行一次计算
+        // 初始化加载
         calculateSafeDays();
 
-        // 设定每 1 小时自动重新计算一次，确保跨越零点时天数自动增加
+        // 每 1 小时刷新一次
         setInterval(calculateSafeDays, 1000 * 60 * 60);
     </script>
 </body>
